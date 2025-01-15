@@ -7,6 +7,7 @@
 let oGameData = {}; //main objectet används under hela game loopen, allt som är relevant med spelet 
 
 window.addEventListener("load", () => {
+
     initGlobalObject(); //ger globala objectet ett "värde" i functionen
     if (checkForGameOver() === 1) { //kollar om vilken spelare vinner
         console.log("Spelare 1 vann");
@@ -29,15 +30,17 @@ window.addEventListener("load", () => {
 function initGlobalObject() {
     //Datastruktur för vilka platser som är lediga respektive har brickor
     //Genom at fylla i här med antingen X eler O kan ni testa era rättningsfunktioner
+
+
     oGameData.gameField = ["", "", "", "", "", "", "", "", ""]; //Empty board, innan spelarna har börjat
-    //start
+
 
     /* Testdata för att testa rättningslösning */
     // kollar om spelare 1 vinner
-    //oGameData.gameField = ['X', 'X', 'X', '', '', '', '', '', '']; //sätter förb
-    //console.log(checkForGameOver()); //kollar om allt stämmer,
+    console.log(checkForGameOver()); //kollar om allt stämmer,
 
-    //oGameData.gameField = ['X', '', '', 'X', '', '', 'X', '', ''];
+    /* oGameData.gameField = ['X', '', '', 'X', '', '', 'X', '', '']; */
+
 
     //oGameData.gameField = ['X', '', '', '', 'X', '', '', '', 'X'];
     //oGameData.gameField = ['', '', 'X', '', 'X', '', 'X', '', ''];
@@ -74,8 +77,9 @@ function initGlobalObject() {
     oGameData.timerEnabled = false;
 
     //Referens till element för felmeddelanden
-    oGameData.timeRef = document.querySelector("#errorMsg");
+    oGameData.timeRef = document.querySelector("#errorMsg")
 }
+
 
 /**
  * Kontrollerar för tre i rad genom att anropa funktionen checkWinner() och checkForDraw().
@@ -87,14 +91,24 @@ function initGlobalObject() {
  */
 function checkForGameOver() {
     // check winner()
-    // om playerone vinner returnar x = 1
-    //om playertwo vinner return o = 2
-    //checkDraw 
-    // if draw return 3
+    if (checkWinner(oGameData.playerOne)) { //kallar på checkwinner functionen, med playerOne i parametern
+        return 1; // player one wins
 
+    } else if (checkWinner(oGameData.playerTwo)) { //kallar på checkwinner functionen, med playertwo i parametern
+        return 2; // player two wins
 
-
+    } else if (checkForDraw()) { //om gameboard är helt ifyllda
+        return 3;//draw
+    }
+    //functioner har alltid () = parameter
+    return 0; // den är utan för if satsen, så spelet körs fortfarande
 }
+
+
+// om playerone vinner returnar x = 1
+// om playertwo vinner return o = 2
+// checkDraw 
+// if draw return 3
 
 // Säg till om ni vill få pseudokod för denna funktion
 // Viktigt att funktionen returnerar true eller false baserat på om den inskickade spelaren är winner eller ej
@@ -115,29 +129,34 @@ function checkWinner(playerIn) { //playerIn = om en av de två spelare vinner
     ];
 
     for (let combination of winningCombo) {
-        const [a, b, c] = combination;
+        const [a, b, c] = combination; // [] = array
         //om en av spelarna får en av de combinationer
         if (oGameData.gameField[a] === playerIn &&
             oGameData.gameField[b] === playerIn &&
             oGameData.gameField[c] === playerIn
-        )
-
+        ) {
             return true; //  
-         
-    )
 
-        return false; //
-
-
-
+        }
     }
 
+    return false; //behandlas som en break, då den är utan för loopen.
 
 }
 
 
 //Kontrollera om alla platser i oGameData.GameField är fyllda. Om sant returnera true, annars false.
-function checkForDraw() { }
+
+// kallas i GameOver function,  
+function checkForDraw() {
+    // om alla ("") celler är ifyllda, alla drag är använda
+
+    return !oGameData.gameField.includes("");  //returnas endast om gamefielden är full, alla cells ifylld
+
+}
+
+
+
 
 // Nedanstående funktioner väntar vi med!
 
@@ -154,3 +173,5 @@ function changePlayer() { }
 function timer() { }
 
 function gameOver(result) { }
+
+
