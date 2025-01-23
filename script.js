@@ -4,27 +4,9 @@
  * Globalt objekt som innehåller de attribut som ni skall använda.
  * Initieras genom anrop till funktionern initGlobalObject().
  */
-let oGameData = {}; //main objectet används under hela game loopen, allt som är relevant med spelet 
-
-//#newGame- id, ifrån html rad 50
-
-
-
-//window.addEventListener("load", () => {
-//     initGlobalObject(); //ger globala objectet ett "värde" i functionen
-//     if (checkForGameOver() === 1) { //kollar om vilken spelare vinner
-//         console.log("Spelare 1 vann");
-//     } else if (checkForGameOver() === 2) {
-//         console.log("Spelare 2 vann");
-//     } else if (checkForGameOver() === 3) {
-//         console.log("Oavgjort");
-//     } else {
-//         console.log("Spelet fortsätter");
-//     }
-//});
+let oGameData = {};
 
 prepGame();
-
 
 /**
  * Initerar det globala objektet med de attribut som ni skall använda er av.
@@ -35,21 +17,13 @@ function initGlobalObject() {
     //Datastruktur för vilka platser som är lediga respektive har brickor
     //Genom at fylla i här med antingen X eler O kan ni testa era rättningsfunktioner
 
-
     oGameData.gameField = ["", "", "", "", "", "", "", "", ""]; //Empty board, innan spelarna har börjat
 
-
     /* Testdata för att testa rättningslösning */
-    // kollar om spelare 1 vinner
-    console.log(checkForGameOver()); //kollar om allt stämmer,
-
-
-
-
-
-    /* oGameData.gameField = ['X', '', '', 'X', '', '', 'X', '', '']; */
+    //oGameData.gameField = ['X', 'X', 'X', '', '', '', '', '', ''];
+    //oGameData.gameField = ['X', '', '', 'X', '', '', 'X', '', ''];
     //oGameData.gameField = ['X', '', '', '', 'X', '', '', '', 'X'];
-    //oGameData.gameField = ['', '', 'X', '', 'X', '', 'X', '', ''];
+    //oGameData.gameField = ['', '', 'O', '', 'O', '', 'O', '', ''];
     //oGameData.gameField = ['X', 'O', 'X', '0', 'X', 'O', 'O', 'X', 'O'];
 
     //Indikerar tecknet som skall användas för spelare ett.
@@ -64,8 +38,6 @@ function initGlobalObject() {
     //Nickname för spelare ett som tilldelas från ett formulärelement,
     /* oGameData.nickNamePlayerOne = document.getElementById("#nick1"); */
     oGameData.nickNamePlayerOne = "";
-
-
 
     //Nickname för spelare två som tilldelas från ett formulärelement.
     oGameData.nickNamePlayerTwo = "";
@@ -86,11 +58,8 @@ function initGlobalObject() {
     oGameData.timerEnabled = false;
 
     //Referens till element för felmeddelanden
-    oGameData.timeRef = document.querySelector("#errorMsg")
-
-
+    oGameData.timeRef = document.querySelector("#errorMsg");
 }
-
 
 /**
  * Kontrollerar för tre i rad genom att anropa funktionen checkWinner() och checkForDraw().
@@ -101,244 +70,180 @@ function initGlobalObject() {
  * Funktionen tar inte emot några värden.
  */
 function checkForGameOver() {
-    // check winner()
-    if (checkWinner(oGameData.playerOne)) { //kallar på checkwinner functionen, med playerOne i parametern
-        return 1; // player one wins
-
-    } else if (checkWinner(oGameData.playerTwo)) { //kallar på checkwinner functionen, med playertwo i parametern
-        return 2; // player two wins
-
-    } else if (checkForDraw()) { //om gameboard är helt ifyllda
-        return 3;//draw
+    if (checkWinner(oGameData.playerOne)) {
+        return 1;
+    } else if (checkWinner(oGameData.playerTwo)) {
+        return 2;
+    } else if (checkForDraw()) {
+        return 3;
     }
-    //functioner har alltid () = parameter
-    return 0; // den är utan för if satsen, så spelet körs fortfarande
+
+    return 0;
 }
-
-
-// om playerone vinner returnar x = 1
-// om playertwo vinner return o = 2
-// checkDraw 
-// if draw return 3
 
 // Säg till om ni vill få pseudokod för denna funktion
 // Viktigt att funktionen returnerar true eller false baserat på om den inskickade spelaren är winner eller ej
-function checkWinner(playerIn) { //playerIn = om en av de två spelare vinner
-
+function checkWinner(playerIn) {
     const winningCombo = [
-        //horizontal
-        [0, 1, 2],    // översta    /// A
-        [3, 4, 5],    // mitten
-        [6, 7, 8],    // nedersta
-        //Vertical
-        [0, 3, 6],    // vänster    // B
-        [1, 4, 7],    // mitten
-        [2, 5, 8],    // botten
-        //Diagonal
-        [0, 4, 8],    // upp till ner    //C
-        [2, 4, 6]     // ner till upp
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+
+        [0, 4, 8],
+        [2, 4, 6],
     ];
 
     for (let combination of winningCombo) {
-        const [a, b, c] = combination; // [] = array
-        //om en av spelarna får en av de combinationer
-        if (oGameData.gameField[a] === playerIn &&
+        const [a, b, c] = combination;
+        if (
+            oGameData.gameField[a] === playerIn &&
             oGameData.gameField[b] === playerIn &&
             oGameData.gameField[c] === playerIn
         ) {
-            return true; //  
-
+            return true;
         }
     }
 
-    return false; //behandlas som en break, då den är utan för loopen.
-
+    return false;
 }
 
-
-//Kontrollera om alla platser i oGameData.GameField är fyllda. Om sant returnera true, annars false.
-
-// kallas i GameOver function,  
 function checkForDraw() {
-    // om alla ("") celler är ifyllda, alla drag är använda
-
-    return !oGameData.gameField.includes("");  //returnas endast om gamefielden är full, alla cells ifylld
-
+    return !oGameData.gameField.includes("");
 }
-
-
-
 
 // Nedanstående funktioner väntar vi med!
 
 function prepGame() {
-    document.querySelector("#gameArea").classList.add('d-none');
+    document.querySelector("#gameArea").classList.add("d-none");
     document.querySelector("#newGame").addEventListener("click", initiateGame);
 }
 
-function validateForm() {
-    //hanterare/ kollar om spelarna har valt nick/färger
-
-
-}
+function validateForm() {}
 
 function initiateGame() {
+    initGlobalObject();
+
     document.querySelector("#theForm").classList.add("d-none");
-    document.querySelector("#gameArea").classList.remove('d-none');
+    document.querySelector("#gameArea").classList.remove("d-none");
     document.querySelector("#errorMsg").textContent = "";
 
-    oGameData.nickNamePlayerOne = document.querySelector('#nick1').value;
-    oGameData.nickNamePlayerTwo = document.querySelector('#nick2').value;
-    oGameData.colorPlayerOne = document.querySelector('#color1').value;
-    oGameData.colorPlayerTwo = document.querySelector('#color2').value;
+    oGameData.nickNamePlayerOne = document.querySelector("#nick1").value;
+    oGameData.nickNamePlayerTwo = document.querySelector("#nick2").value;
+    oGameData.colorPlayerOne = document.querySelector("#color1").value;
+    oGameData.colorPlayerTwo = document.querySelector("#color2").value;
 
     const cells = document.querySelectorAll("td");
-    cells.forEach((cells) => {
-        cells.textContent = "";
-        cells.style.backgroundcolor = "#ffffff";
+    cells.forEach((cell) => {
+        cell.textContent = "";
+        cell.style.backgroundColor = "#ffffff";
     });
 
-    let playerChar = "";
     let playerName = "";
-
     const randomNmr = Math.random();
 
     if (randomNmr < 0.5) {
-        playerChar = oGameData.playerOne;
-        playerName = oGameData.nickNamePlayerOne;
         oGameData.currentPlayer = oGameData.playerOne;
-
-        //if random number > 0.5
+        playerName = oGameData.nickNamePlayerOne;
     } else {
-        playerChar = oGameData.playerTwo;
-        playerName = oGameData.nickNamePlayerTwo;
         oGameData.currentPlayer = oGameData.playerTwo;
+        playerName = oGameData.nickNamePlayerTwo;
     }
-    //if random number > 0.5
 
-
-    //Ändra texten i h1-elementet som ligger i div-elementet med klassen "jumbotron" till "Aktuell spelare är XXX",
-    // där ni ersätter XXX med namnet på den aktuella spelaren.
-
-    //"hämtar" h1 classen jumbotron ifrån htmlen
-    document.querySelector(".jumbotron").textContent = `Aktuell spelare är ${playerName}`;
+    document.querySelector(
+        ".jumbotron"
+    ).textContent = `Aktuell spelare är ${playerName}`;
 
     document.querySelector("#gameArea").addEventListener("click", executeMove);
-    //tog bort execute(), man skall inte kalla på functionen; 
-
-    //Lägg till en klicklyssnare på tabellen som innehåller spelplanen.
-    // Vid klick skall funktionen "executeMove()" anropas.
-
-
-
 }
-
-
 
 function executeMove(event) {
     const clickedCell = event.target;
 
-    // Kontrollera att klicket skedde på en cell
+    // OM klickhändelsen INTE skett på en tabellcell (td)
     if (clickedCell.tagName !== "TD") return;
 
-    // Kontrollera att cellen är ledig
+    // Kontrollera att den klickade cellen är ledig
     if (clickedCell.textContent !== "") return;
 
-    // Sätt spelets datafält till nuvarande spelare
-    clickedCell.getAttribute("data-id");
-    oGameData.gameField = oGameData.currentPlayer;
+    // Hämta ut attributet "data-id" från den klickade cellen
+    const dataid = clickedCell.getAttribute("data-id");
 
-    // Sätt cellens bakgrundsfärg och text till nuvarande spelare
-    const playerColor = oGameData.currentPlayer === "X" ? oGameData.playerOneColor : oGameData.playerTwoColor;
+    // Sätt "oGameData.gameField" på den hämtade positionen till nuvarande spelare
+    oGameData.gameField[dataid] = oGameData.currentPlayer;
+
+    // Kontrollera vem som är den nuvarande spelaren
+    let playerColor;
+
+    if (oGameData.currentPlayer === "X") {
+        playerColor = oGameData.colorPlayerOne;
+    } else {
+        playerColor = oGameData.colorPlayerTwo;
+    }
+
+    // Sätt bakgrundsfärgen på den klickade tabellcellen till aktuell spelares färg
     clickedCell.style.backgroundColor = playerColor;
+
+    // Sätt cellens textinnehåll till spelarens symbol
     clickedCell.textContent = oGameData.currentPlayer;
 
-    // Byt spelare
-    oGameData.currentPlayer = oGameData.currentPlayer === "X" ? "O" : "X";
-    const nextPlayerName = oGameData.currentPlayer === "X" ? oGameData.nickNamePlayerOne : oGameData.nickNamePlayerTwo;
-    document.querySelector(".jumbotron h1").textContent = `Aktuell spelare är ${playerName}`;
+    // Ändra "oGameData.currentPlayer" till den andra spelaren
+    if (oGameData.currentPlayer === "X") {
+        oGameData.currentPlayer = "O";
+    } else {
+        oGameData.currentPlayer = "X";
+    }
 
-    // Kontrollera om spelet är slut
-    const result = checkGameStatus();
+    // Uppdatera texten i jumbotronen till den nya spelarens namn
+    let nextPlayerName;
+
+    if (oGameData.currentPlayer === "X") {
+        nextPlayerName = oGameData.nickNamePlayerOne;
+    } else {
+        nextPlayerName = oGameData.nickNamePlayerTwo;
+    }
+
+    document.querySelector(
+        ".jumbotron"
+    ).textContent = `Aktuell spelare är ${nextPlayerName}`;
+
+    // Anropa er rättningsfunktion för att kontrollera om spelet är slut
+    const result = checkForGameOver();
     if (result !== 0) {
         gameOver(result);
     }
 }
 
-// function executeMove(event) {
-//     // Kontrollera att klicket är på en tom cell
-//     if (event.target.tagName !== "TD" || event.target.textContent !== "") {
-//         return;
-//     }
+function changePlayer() {}
 
-//     // Hämta data-id från cellen
-//     const dataid = event.target.getAttribute(dataid);
-//     if (!dataid) {
-//         console.error("Kunde inte hitta data-id på den klickade cellen.");
-//         return;
-//     }
+function timer() {}
 
-//     // Uppdatera gameField
-//     oGameData.gameField[dataid] = oGameData.currentPlayer;
-//     console.log("gameField efter uppdatering:", oGameData.gameField);
-
-//     // Uppdatera cellens innehåll och stil
-//     event.target.textContent = oGameData.currentPlayer;
-//     console.log(`Satte text till: ${oGameData.currentPlayer} för cell med data-id: ${dataid}`);
-
-//     if (oGameData.currentPlayer === oGameData.playerOne) {
-//         event.target.style.backgroundColor = oGameData.colorPlayerOne;
-//     } else {
-//         event.target.style.backgroundColor = oGameData.colorPlayerTwo;
-//     }
-
-//     // Kontrollera om spelet är över
-//     const gameStatus = checkForGameOver();
-//     if (gameStatus === 0) {
-//         changePlayer();
-//     } else {
-//         gameOver(gameStatus);
-//     }
-// }
-
-
-
-
-/* function executeMove(event) {
-    if (event.target.tagName !== "TD") {
-        return;
-    }
-
-    if (event.target.textContent !== "") {
-        return;
-    }
-
-    const dataid = event.target.getAttribute("dataid");
-    if (dataid === null) {
-        console.error("dataid is null");
-        return;
-    }
-
-    oGameData.gameField[dataid] = oGameData.currentPlayer;
-    event.target.textContent = oGameData.currentPlayer;
-
-    if (oGameData.currentPlayer === oGameData.playerOne) {
-        event.target.style.backgroundColor = oGameData.colorPlayerOne;
+function gameOver(result) {
+    let message = "";
+    // Kontrollera vilken spelare som vunnit
+    if (result === 1) {
+        message = `${oGameData.nickNamePlayerOne} vann!`;
+    } else if (result === 2) {
+        message = `${oGameData.nickNamePlayerTwo} vann!`;
     } else {
-        event.target.style.backgroundColor = oGameData.colorPlayerTwo;
+        message = "Det blev oavgjort!";
     }
 
-    if (checkForGameOver() === 0) {
-        changePlayer();
-    } else {
-        gameOver(checkForGameOver());
-    }
+    // Skriv ut ett vinnarmeddelande i jumbotronen, följt av "Spela igen?"
+    document.querySelector(".jumbotron").textContent = `${message} Spela igen?`;
+
+    // Ta bort klicklyssnaren på tabellen
+    document
+        .querySelector("#gameArea")
+        .removeEventListener("click", executeMove);
+
+    // Ta bort klassen "d-none" på formuläret och lägg till klassen "d-none" på spelplanen
+    document.querySelector("#theForm").classList.remove("d-none");
+    document.querySelector("#gameArea").classList.add("d-none");
+
+    // Anropa "initGlobalObject()" för att nollställa det globala objektet
+    initGlobalObject();
 }
- */
-
-
-function changePlayer() { }
-
-function timer() { }
-
-function gameOver(result) { }
