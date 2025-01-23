@@ -8,6 +8,8 @@ let oGameData = {};
 
 prepGame();
 
+
+
 /**
  * Initerar det globala objektet med de attribut som ni skall använda er av.
  * Funktionen tar inte emot några värden.
@@ -129,7 +131,7 @@ function initiateGame() {
 
     document.querySelector("#theForm").classList.add("d-none");
     document.querySelector("#gameArea").classList.remove("d-none");
-    document.querySelector("#errorMsg").textContent = "";
+    //removed document.querySelector("#errorMsg").textContent = "";
 
     oGameData.nickNamePlayerOne = document.querySelector("#nick1").value;
     oGameData.nickNamePlayerTwo = document.querySelector("#nick2").value;
@@ -243,7 +245,9 @@ function gameOver(result) {
     // Ta bort klassen "d-none" på formuläret och lägg till klassen "d-none" på spelplanen
     document.querySelector("#theForm").classList.remove("d-none");
     document.querySelector("#gameArea").classList.add("d-none");
-
+    
+    document.querySelector("#newGame").addEventListener("click", initiateGame);
     // Anropa "initGlobalObject()" för att nollställa det globala objektet
-    initGlobalObject();
+    
+    prepGame();
 }
