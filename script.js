@@ -4,6 +4,7 @@
  * Globalt objekt som innehåller de attribut som ni skall använda.
  * Initieras genom anrop till funktionern initGlobalObject().
  */
+
 let oGameData = {};
 
 prepGame();
@@ -154,7 +155,7 @@ function initiateGame() {
     }
 
     document.querySelector(
-        ".jumbotron"
+        ".jumbotron>h1"
     ).textContent = `Aktuell spelare är ${playerName}`;
 
     document.querySelector("#gameArea").addEventListener("click", executeMove);
@@ -207,7 +208,7 @@ function executeMove(event) {
     }
 
     document.querySelector(
-        ".jumbotron"
+        ".jumbotron>h1"
     ).textContent = `Aktuell spelare är ${nextPlayerName}`;
 
     // Anropa er rättningsfunktion för att kontrollera om spelet är slut
@@ -233,7 +234,9 @@ function gameOver(result) {
     }
 
     // Skriv ut ett vinnarmeddelande i jumbotronen, följt av "Spela igen?"
-    document.querySelector(".jumbotron").textContent = `${message} Spela igen?`;
+    document.querySelector(
+        ".jumbotron>h1"
+    ).textContent = `${message} Spela igen?`;
 
     // Ta bort klicklyssnaren på tabellen
     document
