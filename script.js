@@ -229,9 +229,12 @@ function changePlayer() {}
 function timer() {
     const timerInput = document.getElementById("timerInput")
     const timeValue =timerInput.value;
-
+    
+    //if not timevalue conditions
     if(!timeValue){
         console.log("Please set the Timer")
+        //Sets background color to red
+        timerInput.style.backgroundColor ="#FF0000";
         return;
     }
 }
