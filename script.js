@@ -54,13 +54,13 @@ function initGlobalObject() {
     oGameData.seconds = 5;
 
     //Timerns ID
-    oGameData.timerId = null;
+    oGameData.timerId = "#timerInput";
 
     //Från start är timern inaktiverad
     oGameData.timerEnabled = false;
 
     //Referens till element för felmeddelanden
-    oGameData.timeRef = document.querySelector("#errorMsg");
+    oGameData.timeRef = document.querySelector("#timeError");
 }
 
 /**
@@ -134,7 +134,7 @@ function initiateGame() {
     document.querySelector("#theForm").classList.add("d-none");
     document.querySelector("#gameArea").classList.remove("d-none");
 
-    //removed document.querySelector("#errorMsg").textContent = "";
+    document.querySelector("#errorMsg").textContent = "";
 
     oGameData.nickNamePlayerOne = document.querySelector("#nick1").value;
     oGameData.nickNamePlayerTwo = document.querySelector("#nick2").value;
@@ -158,9 +158,7 @@ function initiateGame() {
         playerName = oGameData.nickNamePlayerTwo;
     }
 
-    document.querySelector(
-        ".jumbotron"
-    ).textContent = `Aktuell spelare är ${playerName}`;
+    document.querySelector(".jumbotron>h1").textContent = `Aktuell spelare är ${playerName}`;
 
     document.querySelector("#gameArea").addEventListener("click", executeMove);
 }
@@ -212,7 +210,7 @@ function executeMove(event) {
     }
 
     document.querySelector(
-        ".jumbotron"
+        ".jumbotron>h1"
     ).textContent = `Aktuell spelare är ${nextPlayerName}`;
 
     // Anropa er rättningsfunktion för att kontrollera om spelet är slut
@@ -227,17 +225,46 @@ function changePlayer() {}
 
 //kallas i initiateGame funct, hanteras av eventlistner inom prepgame func
 function timer() {
-    const timerInput = document.getElementById("timerInput")
-    const timeValue =timerInput.value;
-    
-    //if not timevalue conditions
-    if(!timeValue){
-        console.log("Please set the Timer")
-        //Sets background color to red
-        timerInput.style.backgroundColor ="#FF0000";
+ 
+  
+
+    const timerInput = document.getElementById("timerInput"); // Get the timer input
+    const display = oGameData.timeRef; 
+
+    if (!timerInput.value) {
+        display.textContent = "Please set a valid time!";
+        timerInput.style.backgroundColor = "#FF0000";
         return;
     }
+
+    timerInput.style.backgroundColor = ""; // Reset background color
+    
+
+    // Extract hours and minutes from the input
+    const [targetHours, targetMinutes] = timerInput.value.split(":").map(Number);
+
+    // Calculate the total target time in seconds
+    let remainingTimeInSeconds = targetHours * 3600 + targetMinutes * 60;
+
+    // Enable the timer
+    oGameData.timerEnabled = true;
+
+    // Start the countdown
+    oGameData.timerId = setInterval(() => {
+        //if no time remain
+        if (remainingTimeInSeconds <= 0) {
+            clearInterval(oGameData.timerId); // Stop the countdown when time is up
+            display.textContent = "Time's up!";
+            alert("Timer finished!");
+            oGameData.timerEnabled = false; // Timer disabled after the alert
+            return;
+        }
+
+    },);
 }
+
+
+
 
 function gameOver(result) {
     let message = "";
@@ -251,7 +278,9 @@ function gameOver(result) {
     }
 
     // Skriv ut ett vinnarmeddelande i jumbotronen, följt av "Spela igen?"
-    document.querySelector(".jumbotron").textContent = `${message} Spela igen?`;
+   
+    document.querySelector( ".jumbotron>h1").textContent = `${message} Spela igen?` ;
+
 
     // Ta bort klicklyssnaren på tabellen
     document
