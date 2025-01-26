@@ -73,10 +73,13 @@ function initGlobalObject() {
  */
 function checkForGameOver() {
     if (checkWinner(oGameData.playerOne)) {
+        oGameData.timerEnabled = false;
         return 1;
     } else if (checkWinner(oGameData.playerTwo)) {
+        oGameData.timerEnabled = false;
         return 2;
     } else if (checkForDraw()) {
+        oGameData.timerEnabled = false;
         return 3;
     }
 
@@ -147,6 +150,8 @@ function initiateGame() {
         cell.style.backgroundColor = "#ffffff";
     });
 
+
+    //goes trough a random number to pick a starting player
     let playerName = "";
     const randomNmr = Math.random();
 
@@ -200,18 +205,7 @@ function executeMove(event) {
         oGameData.currentPlayer = "X";
     }
 
-    // Uppdatera texten i jumbotronen till den nya spelarens namn
-    let nextPlayerName;
-
-    if (oGameData.currentPlayer === "X") {
-        nextPlayerName = oGameData.nickNamePlayerOne;
-    } else {
-        nextPlayerName = oGameData.nickNamePlayerTwo;
-    }
-
-    document.querySelector(
-        ".jumbotron>h1"
-    ).textContent = `Aktuell spelare är ${nextPlayerName}`;
+    changePlayer();
 
     // Anropa er rättningsfunktion för att kontrollera om spelet är slut
     const result = checkForGameOver();
@@ -220,48 +214,81 @@ function executeMove(event) {
     }
 }
 
-function changePlayer() {}
+function changePlayer() {
+      // Uppdatera texten i jumbotronen till den nya spelarens namn
+      let nextPlayerName;
 
-
-//kallas i initiateGame funct, hanteras av eventlistner inom prepgame func
-function timer() {
- 
+      if (oGameData.currentPlayer === "X") {
+          nextPlayerName = oGameData.nickNamePlayerOne;
+      } else {
+          nextPlayerName = oGameData.nickNamePlayerTwo;
+      }
   
+      document.querySelector(
+          ".jumbotron>h1"
+      ).textContent = `Aktuell spelare är ${nextPlayerName}`;
+}
 
-    const timerInput = document.getElementById("timerInput"); // Get the timer input
+
+function timer() {
+    // Get the timer input by id from the html
+    const timerInput = document.getElementById("timerInput"); 
+    
+    //sets the diplay(error message) to the stored value within the "global object"
     const display = oGameData.timeRef; 
 
+       //if the value within the timer is not valid
+       //set a red color background 
     if (!timerInput.value) {
         display.textContent = "Please set a valid time!";
         timerInput.style.backgroundColor = "#FF0000";
         return;
     }
+    // Resets the timer error color red.
+    timerInput.style.backgroundColor = ""; 
 
-    timerInput.style.backgroundColor = ""; // Reset background color
-    
-
-    // Extract hours and minutes from the input
+    // Extract hours and minutes from input "time" within the html
     const [targetHours, targetMinutes] = timerInput.value.split(":").map(Number);
 
     // Calculate the total target time in seconds
+    //3600 seconds = 1 hour, 1 hour = 60 minutes
     let remainingTimeInSeconds = targetHours * 3600 + targetMinutes * 60;
 
     // Enable the timer
     oGameData.timerEnabled = true;
 
-    // Start the countdown
+    // Starts the timer
     oGameData.timerId = setInterval(() => {
-        //if no time remain
-        if (remainingTimeInSeconds <= 0) {
-            clearInterval(oGameData.timerId); // Stop the countdown when time is up
-            display.textContent = "Time's up!";
-            alert("Timer finished!");
-            oGameData.timerEnabled = false; // Timer disabled after the alert
+
+        //if the timer is stopped by either the time runningout or the conditions within the CheckforGameOver
+        if (!oGameData.timerEnabled) {
+             // Stops the "ticking"- stops the timer
+            clearInterval(oGameData.timerId);
+            display.textContent = "Timer stopped.";
             return;
         }
 
-    },);
+        // Decrease the remaining time
+        remainingTimeInSeconds--;
+
+        // Calculate hours, minutes, and seconds from remaining time
+        const hours = Math.floor(remainingTimeInSeconds / 3600);
+        const minutes = Math.floor((remainingTimeInSeconds % 3600) / 60);
+        const seconds = remainingTimeInSeconds % 60;
+
+        // Update the display
+        display.textContent = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
+        // Stop the countdown when time is up
+        if (remainingTimeInSeconds <= 0) {
+            clearInterval(oGameData.timerId);
+            display.textContent = "Time's up!";
+            alert("Timer finished!");
+            oGameData.timerEnabled = false; // Timer disabled after the alert
+        }
+    }, 1000); // Update every second
 }
+
 
 
 
