@@ -60,7 +60,7 @@ function initGlobalObject() {
     oGameData.timerEnabled = false;
 
     //Referens till element för felmeddelanden
-    oGameData.timeRef = document.querySelector("#timeError");
+    oGameData.timeRef = null;
 }
 
 /**
@@ -132,6 +132,8 @@ function validateForm() {}
 
 function initiateGame() {
     initGlobalObject();
+
+    oGameData.timerEnabled = true;
     timer();
 
     document.querySelector("#theForm").classList.add("d-none");
@@ -207,10 +209,12 @@ function executeMove(event) {
 
     changePlayer();
 
-    // Anropa er rättningsfunktion för att kontrollera om spelet är slut
     const result = checkForGameOver();
     if (result !== 0) {
         gameOver(result);
+    } else {
+        //reset the timer
+        timer(); 
     }
 }
 
@@ -231,66 +235,39 @@ function changePlayer() {
 
 
 function timer() {
-    // Get the timer input by id from the html
-    const timerInput = document.getElementById("timerInput"); 
-    
-    //sets the diplay(error message) to the stored value within the "global object"
-    const display = oGameData.timeRef; 
-
-       //if the value within the timer is not valid
-       //set a red color background 
-    if (!timerInput.value) {
-        display.textContent = "Please set a valid time!";
-        timerInput.style.backgroundColor = "#FF0000";
-        return;
+    // Stop any existing timer
+    if (oGameData.timeRef) {
+        clearInterval(oGameData.timeRef);
     }
-    // Resets the timer error color red.
-    timerInput.style.backgroundColor = ""; 
 
-    // Extract hours and minutes from input "time" within the html
-    const [targetHours, targetMinutes] = timerInput.value.split(":").map(Number);
+    // Ensure the timer only runs if the game is active
+    if (!oGameData.timerEnabled) return;
 
-    // Calculate the total target time in seconds
-    //3600 seconds = 1 hour, 1 hour = 60 minutes
-    let remainingTimeInSeconds = targetHours * 3600 + targetMinutes * 60;
+    // Reset the seconds for the new turn
+    oGameData.seconds = 5;
 
-    // Enable the timer
-    oGameData.timerEnabled = true;
+    // Start a new timer interval
+    oGameData.timeRef = setInterval(() => {
+        oGameData.seconds--;
 
-    // Starts the timer
-    oGameData.timerId = setInterval(() => {
-
-        //if the timer is stopped by either the time runningout or the conditions within the CheckforGameOver
-        if (!oGameData.timerEnabled) {
-             // Stops the "ticking"- stops the timer
-            clearInterval(oGameData.timerId);
-            display.textContent = "Timer stopped.";
-            return;
+        // Update the timer display
+        const timerDisplay = document.querySelector(".jumbotron>h1");
+        if (timerDisplay) {
+            timerDisplay.textContent = `${oGameData.currentPlayer}, ${oGameData.seconds}s kvar`;
         }
 
-        // Decrease the remaining time
-        remainingTimeInSeconds--;
+        // Check if time has run out
+        if (oGameData.seconds <= 0) {
+            clearInterval(oGameData.timeRef); // Stop the timer
 
-        // Calculate hours, minutes, and seconds from remaining time
-        const hours = Math.floor(remainingTimeInSeconds / 3600);
-        const minutes = Math.floor((remainingTimeInSeconds % 3600) / 60);
-        const seconds = remainingTimeInSeconds % 60;
+            // Force the current player to lose and trigger game-over logic
+            const vinnare= oGameData.currentPlayer === "X" ? 2 : 1; 
+            gameOver(vinnare);
 
-        // Update the display
-        display.textContent = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-
-        // Stop the countdown when time is up
-        if (remainingTimeInSeconds <= 0) {
-            clearInterval(oGameData.timerId);
-            display.textContent = "Time's up!";
-            alert("Timer finished!");
-            oGameData.timerEnabled = false; // Timer disabled after the alert
+            return;
         }
     }, 1000); // Update every second
 }
-
-
-
 
 
 function gameOver(result) {
