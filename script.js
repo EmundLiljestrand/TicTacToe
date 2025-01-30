@@ -175,7 +175,7 @@ function validateForm(event) {
 
         if (error.nodeRef) {
             // Återställ felaktiga fält till en standard (om det är en färg, sätt till #ffffff, om det är nickname gör inget)
-            if (error.nodeRef.id === "color1" || error.nodeRef.id === "color2") {
+            if (error.nodeRef.id === "#color1" || error.nodeRef.id === "#color2") {
                 error.nodeRef.value = "#ffffff";  // Sätt till vit om det är en färg
 
             } else {
