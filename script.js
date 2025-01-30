@@ -6,7 +6,10 @@
  */
 let oGameData = {};
 
-prepGame();
+document.querySelector("#newGame").addEventListener("click", validateForm);
+
+
+
 
 /**
  * Initerar det globala objektet med de attribut som ni skall använda er av.
@@ -19,13 +22,6 @@ function initGlobalObject() {
 
     oGameData.gameField = ["", "", "", "", "", "", "", "", ""]; //Empty board, innan spelarna har börjat
 
-    /* Testdata för att testa rättningslösning */
-    //oGameData.gameField = ['X', 'X', 'X', '', '', '', '', '', ''];
-    //oGameData.gameField = ['X', '', '', 'X', '', '', 'X', '', ''];
-    //oGameData.gameField = ['X', '', '', '', 'X', '', '', '', 'X'];
-    //oGameData.gameField = ['', '', 'O', '', 'O', '', 'O', '', ''];
-    //oGameData.gameField = ['X', 'O', 'X', '0', 'X', 'O', 'O', 'X', 'O'];
-
     //Indikerar tecknet som skall användas för spelare ett.
     oGameData.playerOne = "X";
 
@@ -35,20 +31,15 @@ function initGlobalObject() {
     //Kan anta värdet X eller O och indikerar vilken spelare som för tillfället skall lägga sin "bricka".
     oGameData.currentPlayer = "";
 
-    //Nickname för spelare ett som tilldelas från ett formulärelement,
-    /* oGameData.nickNamePlayerOne = document.getElementById("#nick1"); */
     oGameData.nickNamePlayerOne = "";
-
-    //Nickname för spelare två som tilldelas från ett formulärelement.
     oGameData.nickNamePlayerTwo = "";
-
     //Färg för spelare ett som tilldelas från ett formulärelement.
     oGameData.colorPlayerOne = "";
 
     //Färg för spelare två som tilldelas från ett formulärelement.
     oGameData.colorPlayerTwo = "";
 
-    //Antalet sekunder för timerfunktionen
+    //Antalet sekunder för timerfunktionenx 
     oGameData.seconds = 5;
 
     //Timerns ID
@@ -59,6 +50,8 @@ function initGlobalObject() {
 
     //Referens till element för felmeddelanden
     oGameData.timeRef = document.querySelector("#errorMsg");
+
+
 }
 
 /**
@@ -110,38 +103,113 @@ function checkWinner(playerIn) {
 
     return false;
 }
-
+// kolla om spelplanen inehåller tom cell
 function checkForDraw() {
     return !oGameData.gameField.includes("");
 }
 
-// Nedanstående funktioner väntar vi med!
 
+// här fanns vår bugg error message
 function prepGame() {
     document.querySelector("#gameArea").classList.add("d-none");
-    document.querySelector("#newGame").addEventListener("click", initiateGame);
+    document.querySelector("#newGame").addEventListener("click", validateForm);
+
 }
 
-function validateForm() {}
 
-function initiateGame() {
-    initGlobalObject();
+function validateForm(event) {
+    event.preventDefault();
 
-    document.querySelector("#theForm").classList.add("d-none");
-    document.querySelector("#gameArea").classList.remove("d-none");
-    document.querySelector("#errorMsg").textContent = "";
 
     oGameData.nickNamePlayerOne = document.querySelector("#nick1").value;
     oGameData.nickNamePlayerTwo = document.querySelector("#nick2").value;
     oGameData.colorPlayerOne = document.querySelector("#color1").value;
     oGameData.colorPlayerTwo = document.querySelector("#color2").value;
 
+    let color1 = oGameData.colorPlayerOne;
+    let color2 = oGameData.colorPlayerTwo;
+
+    //let playerNickName = oGameData.nickNamePlayerOne + oGameData.nickNamePlayerTwo;
+
+    // oGameData.nickNamePlayerOne.length > 5 && oGameData.nickNamePlayerTwo.length
+    //svart och vit
+    try {
+        if (!oGameData.nickNamePlayerOne || !oGameData.nickNamePlayerTwo) {
+            throw {
+                message: "both players must enter a nick",
+                nodeRef: !oGameData.nickNamePlayerOne ? document.querySelector("#nick1") : document.querySelector("#nick2")
+            };
+
+        } if (oGameData.nickNamePlayerOne.length < 3 || oGameData.nickNamePlayerOne.length > 10) {
+            throw {
+                message: 'Player 1 - length must be between 3 and 10 characters',
+                nodeRef: document.querySelector("#nick1")
+            };
+
+
+        } if (oGameData.nickNamePlayerTwo.length < 3 || oGameData.nickNamePlayerTwo.length > 10) {
+            throw {
+                message: 'Player 2 - length must be between 3 and 10 characters',
+                nodeRef: document.querySelector("#nick2")
+            };
+
+        } if (color1 === "#ffffff" || color1 === "#000000") {
+            throw {
+                message: "You cannot choose black or white color for player 1, try again",
+                codeRef: document.querySelector("#color1")
+            };
+
+        } else if (color2 === "#ffffff" || color2 === "#000000") {
+            throw {
+                message: "You cannot choose black or white color for player 2, try again",
+                codeRef: document.querySelector("#color2")
+            };
+
+        }
+        initiateGame();
+        return true;
+    } catch (error) {
+
+        console.log(error.message);
+        document.querySelector("#errorMsg").textContent = error.message;
+
+        if (error.nodeRef) {
+            // Återställ felaktiga fält till en standard (om det är en färg, sätt till #ffffff, om det är nickname gör inget)
+            if (error.nodeRef.id === "color1" || error.nodeRef.id === "color2") {
+                error.nodeRef.value = "#ffffff";  // Sätt till vit om det är en färg
+
+            } else {
+                error.nodeRef.value = ""; // Om det är ett nickname, sätt det tomt igen
+            }
+            error.nodeRef.focus();  // Sätt fokus på fältet så användaren kan rätta felet
+        }
+
+    }
+}
+
+
+function initiateGame() {
+    initGlobalObject();
+
+    //Dölj formulär och visa spelbräde
+    document.querySelector("#theForm").classList.add("d-none");
+    document.querySelector("#gameArea").classList.remove("d-none");
+
+    // hämta användarnamn och färg
+    oGameData.nickNamePlayerOne = document.querySelector("#nick1").value;
+    oGameData.nickNamePlayerTwo = document.querySelector("#nick2").value;
+    oGameData.colorPlayerOne = document.querySelector("#color1").value;
+    oGameData.colorPlayerTwo = document.querySelector("#color2").value;
+
+    //rensa spelplanen v
     const cells = document.querySelectorAll("td");
     cells.forEach((cell) => {
         cell.textContent = "";
         cell.style.backgroundColor = "#ffffff";
     });
 
+
+    //slumpa player
     let playerName = "";
     const randomNmr = Math.random();
 
@@ -152,10 +220,8 @@ function initiateGame() {
         oGameData.currentPlayer = oGameData.playerTwo;
         playerName = oGameData.nickNamePlayerTwo;
     }
-
-    document.querySelector(
-        ".jumbotron"
-    ).textContent = `Aktuell spelare är ${playerName}`;
+    // uppdatera text
+    document.querySelector(".jumbotron").textContent = `Aktuell spelare är ${playerName}`;
 
     document.querySelector("#gameArea").addEventListener("click", executeMove);
 }
@@ -190,6 +256,16 @@ function executeMove(event) {
     // Sätt cellens textinnehåll till spelarens symbol
     clickedCell.textContent = oGameData.currentPlayer;
 
+    changePlayer();
+
+    // Anropa er rättningsfunktion för att kontrollera om spelet är slut
+    const result = checkForGameOver();
+    if (result !== 0) {
+        gameOver(result);
+    }
+}
+
+function changePlayer() {
     // Ändra "oGameData.currentPlayer" till den andra spelaren
     if (oGameData.currentPlayer === "X") {
         oGameData.currentPlayer = "O";
@@ -206,22 +282,13 @@ function executeMove(event) {
         nextPlayerName = oGameData.nickNamePlayerTwo;
     }
 
-    document.querySelector(
-        ".jumbotron"
-    ).textContent = `Aktuell spelare är ${nextPlayerName}`;
-
-    // Anropa er rättningsfunktion för att kontrollera om spelet är slut
-    const result = checkForGameOver();
-    if (result !== 0) {
-        gameOver(result);
-    }
+    document.querySelector(".jumbotron").textContent = `Aktuell spelare är ${nextPlayerName}`;
 }
 
-function changePlayer() {}
-
-function timer() {}
+function timer() { }
 
 function gameOver(result) {
+
     let message = "";
     // Kontrollera vilken spelare som vunnit
     if (result === 1) {
@@ -236,13 +303,14 @@ function gameOver(result) {
     document.querySelector(".jumbotron").textContent = `${message} Spela igen?`;
 
     // Ta bort klicklyssnaren på tabellen
-    document
-        .querySelector("#gameArea")
-        .removeEventListener("click", executeMove);
+    document.querySelector("#gameArea").removeEventListener("click", executeMove);
 
     // Ta bort klassen "d-none" på formuläret och lägg till klassen "d-none" på spelplanen
+
     document.querySelector("#theForm").classList.remove("d-none");
     document.querySelector("#gameArea").classList.add("d-none");
+
+
 
     // Anropa "initGlobalObject()" för att nollställa det globala objektet
     initGlobalObject();
